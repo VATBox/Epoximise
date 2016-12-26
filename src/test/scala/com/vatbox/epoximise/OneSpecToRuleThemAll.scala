@@ -6,25 +6,28 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.time.{Millis, Seconds, Span}
 
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext.Implicits.global
+//import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by talg on 24/11/2016.
   */
-class OneSpecToRuleThemAll extends FreeSpecLike with GeneratorDrivenPropertyChecks with ScalaFutures with Matchers with BeforeAndAfterAll{
+class OneSpecToRuleThemAll extends AsyncFreeSpecLike with ScalaFutures with GeneratorDrivenPropertyChecks with Matchers with BeforeAndAfterAll{
   val dao = SimpleDao
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(10,Seconds),Span(100, Millis))
+//  implicit override val generatorDrivenConfig = PropertyCheckConfiguration(minSize = 15)
 
   "Generate random objects and insert them to DB" in {
     var buffer = mutable.Buffer[UpperLevel]()
-    forAll(Generators.upperLevelGen, minSuccessful(100)) { obj =>
+    val res = forAll(Generators.upperLevelGen,MinSuccessful(100)) { obj =>
       val future = dao.insert(obj)
-      future.map(_ => buffer += obj).futureValue
+      future.map { completed =>
+        buffer += obj
+      }
     }
 
-    val seq = dao.find[UpperLevel]().futureValue
-
-    seq should contain theSameElementsAs buffer
+    dao.find[UpperLevel]().map { seq =>
+      seq should contain theSameElementsAs buffer
+    }
   }
 
   override protected def beforeAll(): Unit = {
