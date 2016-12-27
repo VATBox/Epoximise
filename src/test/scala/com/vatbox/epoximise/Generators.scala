@@ -17,21 +17,9 @@ object Generators {
     o <- Gen.option(Arbitrary.arbBool.arbitrary)
     d <- Arbitrary.arbDouble.arbitrary
     l <- Arbitrary.arbLong.arbitrary
-//    date <- Gen.choose(1479991486000L,1479981486000L).map(new Date(_))
     uuid <- Gen.uuid
     set <- Gen.choose(0,5).flatMap(size => Gen.listOfN(size,embeddedGen)).map(_.toSet)
-  } yield UpperLevel(
-    i,
-    b,
-    s,
-    o,
-    d,
-    l,
-//    date,
-    ObjectId.get(),
-    uuid,
-    set
-  )
+  } yield UpperLevel(i, b, s, o, d, l, ObjectId.get(), uuid, set)
 
   def embeddedGen : Gen[Embedded] = for {
     ii <- Arbitrary.arbInt.arbitrary
@@ -42,12 +30,7 @@ object Generators {
       val nanos = time.getNano
       time.minusNanos(nanos)
     }
-  } yield Embedded(
-    ii,
-    bb,
-    arr,
-    lDate
-  )
+  } yield Embedded(ii, bb, arr, lDate)
 }
 
 case class UpperLevel(
@@ -57,7 +40,6 @@ case class UpperLevel(
                        o: Option[Boolean],
                        d: Double,
                        l: Long,
-//                       date: Date,
                        objectId: ObjectId,
                        uuid: UUID,
                        set: Set[Embedded]

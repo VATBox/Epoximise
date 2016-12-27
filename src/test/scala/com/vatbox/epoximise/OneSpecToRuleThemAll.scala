@@ -16,9 +16,9 @@ class OneSpecToRuleThemAll extends AsyncFreeSpecLike with ScalaFutures with Gene
 
   "Generate random objects and insert them to DB" in {
     var buffer = mutable.Buffer[UpperLevel]()
-    val res = forAll(Generators.upperLevelGen,MinSuccessful(100)) { obj =>
+    forAll(Generators.upperLevelGen,MinSuccessful(100)) { obj =>
       val future = dao.insert(obj)
-      future.map { completed =>
+      future.map { _ =>
         buffer += obj
       }
     }
