@@ -4,6 +4,7 @@
 ## Example is the best way to explain what it is.
  * Let's create 2 scala classes first, they are pretty generic:
     ```scala
+    
     case class UpperLevel(
                            i: Int,
                            b: Boolean,
@@ -106,6 +107,7 @@
     ```
  * This is what is looks like in MongoDB:
     ```javascript
+    
     db.objects.findOne()
     {
     	"_id" : ObjectId("586212cca36dbdbcee840c8d"),
