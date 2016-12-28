@@ -20,7 +20,7 @@ publishTo := {
 publishMavenStyle := true
 pomIncludeRepository := { _ => false }
 pomExtra := (
-  <url>https://vatbox.github.io/epoximise/</url>
+  <url>https://vatbox.github.io/Epoximise/</url>
     <licenses>
       <license>
         <name>Apache-style</name>

@@ -31,6 +31,7 @@
     ```
     That's it.
  * This is how our DAO looks like (full example [here](/src/test/scala/com/vatbox/epoximise/OneSpecToRuleThemAll.scala)):
+    
     ```scala
     object SimpleDao {
       val collection: MongoCollection[Document] = db.getCollection("objects")
@@ -62,6 +63,7 @@
     }
     ```
  * Now what's left for us is to use it:
+    
     ```scala
     class OneSpecToRuleThemAll extends AsyncFreeSpecLike with ScalaFutures with GeneratorDrivenPropertyChecks with Matchers with BeforeAndAfterAll{
       val dao = SimpleDao
@@ -174,10 +176,12 @@
     "org.json4s" %% "json4s-core" % "3.5.0"
   ```
  * You will also need to have [Formats](https://github.com/json4s/json4s/blob/3.6/core/src/main/scala/org/json4s/Formats.scala) implicitly available when using this library:
+    
     ```scala
      implicit val formats: Formats
     ```
     There are several useful serializers/deserializers included in this library make sure you include them if needed.
+    
     ```scala
      object ObjectIdSerializer extends Serializer[ObjectId]
      object UUIDSerializer extends Serializer[UUID]
