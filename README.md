@@ -42,28 +42,9 @@
       val epox: Epoximise = EpoximiseBuilder().build()
       import epox._
     
-      def insert[A <: AnyRef](entity : A): Future[Completed] = {
-        val promise = Promise[Completed]()
-        /**
-           entity is implicitly converted to MongoDB Document
-           {{{http://mongodb.github.io/mongo-scala-driver/1.2/bson/documents/#immutable-documents}}} 
-        */
-        val observable = collection.insertOne(entity) 
-        observable.subscribe(new Observer[Completed] {
-          override def onError(e: Throwable) = promise.failure(e)
+      def insert[A <: AnyRef](entity : A): Future[Completed] = collection.insertOne(entity).head()
     
-          override def onComplete() = {} // basically do nothing
-    
-          override def onNext(result: Completed) = promise.trySuccess(result)
-        })
-        promise.future
-      }
-    
-      def find[A: Manifest](): Future[Seq[A]] = {
-        collection.find().toFuture().map( seq =>
-          seq.map(_.extract[A])
-        )
-      }
+      def find[A: Manifest](): Future[Seq[A]] = collection.find().map(_.extract[A]).toFuture()
     }
     ```
  * Now what's left for us is to use it:
