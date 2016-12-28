@@ -11,7 +11,7 @@ import scala.concurrent.{Future, Promise}
   * Created by talg on 24/11/2016.
   */
 object SimpleDao {
-  implicit val formats: Formats = DefaultFormats + ObjectIdSerializer + LocalDateTimeSerializer(DefaultDateTimeFormatter) + DateSerializer + UUIDSerializer
+  implicit val formats: Formats = DefaultFormats + ObjectIdSerializer + LocalDateTimeSerializer() + DateSerializer + UUIDSerializer
   val mongoClient = MongoClient()
   val db: MongoDatabase = mongoClient.getDatabase("test_epoximise")
   val collection: MongoCollection[Document] = db.getCollection("objects")

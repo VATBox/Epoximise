@@ -55,7 +55,7 @@ package object epoximise {
     * Queries for a Date (dt) using the lift-json DSL look like:
     * ("dt" -> ("$dt" -> formats.dateFormat.format(dt)))
     */
-  case class LocalDateTimeSerializer(localDateTimeFormatter: DateTimeFormatter) extends Serializer[LocalDateTime] {
+  case class LocalDateTimeSerializer(localDateTimeFormatter: DateTimeFormatter = DefaultDateTimeFormatter) extends Serializer[LocalDateTime] {
     private val DateClass = classOf[LocalDateTime]
 
     def deserialize(implicit format: Formats): PartialFunction[(TypeInfo, JValue), LocalDateTime] = {

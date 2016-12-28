@@ -1,8 +1,9 @@
-# Epoximise - library to serialize/deserialize MongoDB (ver 3+) **`BsonValue`**s 
+# Epoximise - library to serialize/deserialize MongoDB (ver 3.0+) [BsonValue](http://mongodb.github.io/mongo-java-driver/3.4/javadoc/org/bson/BsonValue.html) 
 [![CircleCI](https://circleci.com/gh/VATBox/Epoximise.svg?style=svg)](https://circleci.com/gh/VATBox/Epoximise)
 
-## Example is the best way to explain what it is.
+## Example is the best way to explain what it does.
  * Let's create 2 scala classes first, they are pretty generic:
+    
     ```scala
     case class UpperLevel(
                            i: Int,
@@ -17,36 +18,12 @@
                          )
     case class Embedded(ii: Int, bb: Boolean, arr: List[Int], lclDate: LocalDateTime)
     ```
- * Then we will create some __random__ objects using [scalacheck](https://www.scalacheck.org) generators:
-    ```scala
-      def upperLevelGen: Gen[UpperLevel] = for{
-        i <- Arbitrary.arbInt.arbitrary
-        b <- Arbitrary.arbBool.arbitrary
-        s <- Gen.listOfN(10,Gen.alphaNumChar).map(_.mkString)
-        o <- Gen.option(Arbitrary.arbBool.arbitrary)
-        d <- Arbitrary.arbDouble.arbitrary
-        l <- Arbitrary.arbLong.arbitrary
-        uuid <- Gen.uuid
-        set <- Gen.choose(0,5).flatMap(size => Gen.listOfN(size,embeddedGen)).map(_.toSet)
-      } yield UpperLevel(i, b, s, o, d, l, ObjectId.get(), uuid, set)
-    
-      def embeddedGen : Gen[Embedded] = for {
-        ii <- Arbitrary.arbInt.arbitrary
-        bb <- Arbitrary.arbBool.arbitrary
-        arr <- Gen.choose(0,10).flatMap(size => Gen.listOfN(size, Arbitrary.arbInt.arbitrary))
-        lDate <- Gen.choose(10000,100000).map { sec =>
-          val time = LocalDateTime.now().minusSeconds(sec)
-          val nanos = time.getNano
-          time.minusNanos(nanos)
-        }
-      } yield Embedded(ii, bb, arr, lDate)
-    ```
+    We will also create some __random__ objects using [scalacheck](https://www.scalacheck.org) generators ([example](/src/test/scala/com/vatbox/epoximise/Generators.scala)).
  * Now that we have our objects let's persist them to MongoDB using [MongoDB scala driver](https://docs.mongodb.com/ecosystem/drivers/scala/). 
  For that we will create a really simple DAO with the following methods:
     - Insert __ANY__(almost) object = `def insert[A <: AnyRef](entity : A): Future[Completed]`
     - Find All = `def find[A: Manifest](): Future[Seq[A]]`
- 
-    This is the part where Epoximise comes to the rescue and this is what you need to add:
+ * In order to persist our almost __ANY__ object into DB we will need this library:
     ```scala
     val epox: Epoximise = EpoximiseBuilder().build()
     import epox._
@@ -91,9 +68,9 @@
     
       "Generate random objects and insert them to DB" in {
         var buffer = mutable.Buffer[UpperLevel]()
-        val res = forAll(Generators.upperLevelGen,MinSuccessful(100)) { obj =>
+        forAll(Generators.upperLevelGen,MinSuccessful(100)) { obj =>
           val future = dao.insert(obj)
-          future.map { completed =>
+          future.map { _ =>
             buffer += obj
           }
         }
@@ -105,6 +82,7 @@
     }
     ```
  * This is what is looks like in MongoDB:
+    
     ```javascript
     db.objects.findOne()
     {
@@ -187,4 +165,24 @@
     		}
     	]
     }
+    ```
+## This library is inspired by [Json4s](https://github.com/json4s/json4s) old mongo driver support which means you will need Json4s in order to use it.
+ * Dependencies you will need to add are:
+  ```scala
+    "org.mongodb.scala" %% "mongo-scala-driver" % "1.2.1",
+    "org.json4s" %% "json4s-core" % "3.5.0"
+  ```
+ * You will also need to have [Formats](https://github.com/json4s/json4s/blob/3.6/core/src/main/scala/org/json4s/Formats.scala) implicitly available when using this library:
+    ```scala
+     implicit val formats: Formats
+    ```
+    There are several useful serializers/deserializers included in this library make sure you include them if needed.
+    ```scala
+     object ObjectIdSerializer extends Serializer[ObjectId]
+     object UUIDSerializer extends Serializer[UUID]
+     // Date* serializers - pick one since you can't use both when deserializing from MongoDB 
+     case class LocalDateTimeSerializer(localDateTimeFormatter: DateTimeFormatter) extends Serializer[LocalDateTime]
+     object DateSerializer extends Serializer[Date]
+  
+     implicit val formats: Formats = DefaultFormats + ObjectIdSerializer + LocalDateTimeSerializer() + UUIDSerializer
     ```
