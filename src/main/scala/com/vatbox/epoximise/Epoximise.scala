@@ -7,6 +7,8 @@ import org.bson.BsonValue
 import org.json4s.{Extraction, Formats, JValue}
 import org.mongodb.scala.Document
 
+import scala.util.Try
+
 /**
   * Created by talg on 24/11/2016.
   */
@@ -14,7 +16,7 @@ trait Epoximise { self =>
   protected val parser: EpoximiseParser
   protected val serializer: EpoximiseSerializer
 
-  private[epoximise] implicit def convertToJvalue(any: Any)(implicit formats: Formats): JValue = Extraction.decompose(any)
+  implicit def convertToJvalue(any: Any)(implicit formats: Formats): JValue = Extraction.decompose(any)
 
   implicit def toBsonValue[A <: AnyRef](canBeJvalue: A)(implicit ev: A => JValue, formats: Formats): BsonValue = parser.parse(canBeJvalue)
 
@@ -25,14 +27,26 @@ trait Epoximise { self =>
     Document(javaDoc)
   }
 
+  implicit def fromJvalueToOptionValue[A:Manifest](jValue: JValue)(implicit formats: Formats): Option[A] = {
+    Extraction.extractOpt[A](jValue)
+  }
+
+  implicit def fromJvalueToValue[A:Manifest](jValue: JValue)(implicit formats: Formats): A = {
+    Extraction.extract[A](jValue)
+  }
+
+  implicit def fromDocumentToOptionValue[A: Manifest](document: Document)(implicit formats: Formats): Option[A] = {
+    Try(self.fromBsonValue(document)).map(fromJvalueToValue[A]).toOption
+  }
+
+  implicit def fromDocumentToValue[A: Manifest](document: Document)(implicit formats: Formats): A = {
+    self.fromBsonValue(document)
+  }
+
   implicit class EpoximiseHelperFromBson(val document: Document) {
     def fromBsonValue(implicit formats: Formats): JValue = self.fromBsonValue(document)
-    def extract[A: Manifest](implicit formats: Formats) : A = {
-      Extraction.extract[A](fromBsonValue)
-    }
-    def extractOpt[A: Manifest](implicit formats: Formats) : Option[A] = {
-      Extraction.extractOpt[A](fromBsonValue)
-    }
+    def extract[A: Manifest](implicit formats: Formats) : A = document
+    def extractOpt[A: Manifest](implicit formats: Formats) : Option[A] = document
   }
 }
 
