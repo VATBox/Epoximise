@@ -1,6 +1,10 @@
 # Epoximise - library to serialize/deserialize MongoDB (ver 3.0+) [BsonValue](http://mongodb.github.io/mongo-java-driver/3.4/javadoc/org/bson/BsonValue.html) 
 [![CircleCI](https://circleci.com/gh/VATBox/Epoximise.svg?style=svg)](https://circleci.com/gh/VATBox/Epoximise)
 
+```
+    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.1"
+```
+
 ## Example is the best way to explain what it does.
  * Let's create 2 scala classes first, they are pretty generic:
     
