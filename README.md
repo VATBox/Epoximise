@@ -24,6 +24,7 @@
     - Insert __ANY__(almost) object = `def insert[A <: AnyRef](entity : A): Future[Completed]`
     - Find All = `def find[A: Manifest](): Future[Seq[A]]`
  * In order to persist our almost __ANY__ object into DB we will need this library:
+    
     ```scala
     val epox: Epoximise = EpoximiseBuilder().build()
     import epox._
@@ -64,7 +65,6 @@
     ```scala
     class OneSpecToRuleThemAll extends AsyncFreeSpecLike with ScalaFutures with GeneratorDrivenPropertyChecks with Matchers with BeforeAndAfterAll{
       val dao = SimpleDao
-      override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(10,Seconds),Span(100, Millis))
     
       "Generate random objects and insert them to DB" in {
         var buffer = mutable.Buffer[UpperLevel]()
@@ -168,6 +168,7 @@
     ```
 ## This library is inspired by [Json4s](https://github.com/json4s/json4s) old mongo driver support which means you will need Json4s in order to use it.
  * Dependencies you will need to add are:
+  
   ```scala
     "org.mongodb.scala" %% "mongo-scala-driver" % "1.2.1",
     "org.json4s" %% "json4s-core" % "3.5.0"
