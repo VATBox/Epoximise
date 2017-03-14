@@ -27,7 +27,8 @@ case class EpoximiseSerializer(
       /** LocalDateTime can be different up to the Nano seconds, since MongoDB have only Millis precision
        [[https://docs.mongodb.com/manual/reference/method/Date/#behavior]]
       * */
-    case b: BsonDateTime if isCustomSerializerUsed(classOf[LocalDateTimeSerializer]) => localDateAsJValue(LocalDateTime.ofInstant(Instant.ofEpochMilli(b.getValue),zoneOffset), localDateTimeFormatter) // UTC Epoch [[https://docs.mongodb.com/manual/reference/bson-types/#date]]
+    case b: BsonDateTime if isCustomSerializerUsed(classOf[LocalDateTimeSerializer]) || isCustomSerializerUsed(classOf[LocalDateSerializer])=>
+      localDateAsJValue(LocalDateTime.ofInstant(Instant.ofEpochMilli(b.getValue),zoneOffset), localDateTimeFormatter) // UTC Epoch [[https://docs.mongodb.com/manual/reference/bson-types/#date]]
     case b: BsonDateTime if isCustomSerializerUsed(DateSerializer) => dateAsJValue(new Date(b.getValue))// UTC Epoch [[https://docs.mongodb.com/manual/reference/bson-types/#date]]
     case b: BsonDateTime => JString(formats.dateFormat.format(new Date(b.getValue)))// UTC Epoch [[https://docs.mongodb.com/manual/reference/bson-types/#date]]
     case b: BsonDocument => JObject(

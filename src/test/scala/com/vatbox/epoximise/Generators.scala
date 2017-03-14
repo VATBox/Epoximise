@@ -1,6 +1,6 @@
 package com.vatbox.epoximise
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
 
 import org.bson.types.ObjectId
@@ -25,12 +25,16 @@ object Generators {
     ii <- Arbitrary.arbInt.arbitrary
     bb <- Arbitrary.arbBool.arbitrary
     arr <- Gen.choose(0,10).flatMap(size => Gen.listOfN(size, Arbitrary.arbInt.arbitrary))
-    lDate <- Gen.choose(10000,100000).map { sec =>
+    lDateTime <- Gen.choose(10000,100000).map { sec =>
       val time = LocalDateTime.now().minusSeconds(sec)
       val nanos = time.getNano
       time.minusNanos(nanos)
     }
-  } yield Embedded(ii, bb, arr, lDate)
+    lclDate <- for {
+      month <- Gen.choose(1, 6)
+      day <- Gen.choose(1, 28)
+    } yield LocalDate.of(2016, month, day)
+  } yield Embedded(ii, bb, arr, lDateTime, lclDate)
 }
 
 case class UpperLevel(
@@ -45,4 +49,4 @@ case class UpperLevel(
                        set: Set[Embedded]
                      )
 
-case class Embedded(ii: Int, bb: Boolean, arr: List[Int], lclDate: LocalDateTime)
+case class Embedded(ii: Int, bb: Boolean, arr: List[Int], lclDate: LocalDateTime, justLclDate: LocalDate)

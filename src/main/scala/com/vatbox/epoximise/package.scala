@@ -1,7 +1,7 @@
 package com.vatbox
 
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 import java.util.{Date, UUID}
 
 import org.bson.types.ObjectId
@@ -50,10 +50,10 @@ package object epoximise {
   }
 
   /**
-    * Provides a way to serialize/de-serialize Dates.
+    * Provides a way to serialize/de-serialize LocalDateTime.
     *
-    * Queries for a Date (dt) using the lift-json DSL look like:
-    * ("dt" -> ("$dt" -> formats.dateFormat.format(dt)))
+    * Queries for a LocalDateTime (ldt) using the lift-json DSL look like:
+    * ("ldt" -> ("$ldt" -> formats.dateFormat.format(ldt)))
     */
   case class LocalDateTimeSerializer(localDateTimeFormatter: DateTimeFormatter = DefaultDateTimeFormatter) extends Serializer[LocalDateTime] {
     private val DateClass = classOf[LocalDateTime]
@@ -68,6 +68,28 @@ package object epoximise {
 
     def serialize(implicit format: Formats): PartialFunction[Any, JValue] = {
       case ld: LocalDateTime => localDateAsJValue(ld, localDateTimeFormatter)
+    }
+  }
+
+  /**
+    * Provides a way to serialize/de-serialize LocalDate.
+    * {{{LocalDate is saved with Time using UTC Offset !!!}}}
+    * Queries for a LocalDateTime (ldt) using the lift-json DSL look like:
+    * ("ldt" -> ("$ldt" -> formats.dateFormat.format(ldt)))
+    */
+  case class LocalDateSerializer(localDateTimeFormatter: DateTimeFormatter = DefaultDateTimeFormatter) extends Serializer[LocalDate] {
+    private val DateClass = classOf[LocalDate]
+
+    def deserialize(implicit format: Formats): PartialFunction[(TypeInfo, JValue), LocalDate] = {
+      case (TypeInfo(DateClass, _), json) => json match {
+        case JObject(JField(LocalDateTimeKeyName, JString(s)) :: Nil) =>
+          LocalDateTime.parse(s, localDateTimeFormatter).toLocalDate
+        case x => throw new MappingException(s"Can't convert $x to LocalDateTime")
+      }
+    }
+
+    def serialize(implicit format: Formats): PartialFunction[Any, JValue] = {
+      case ld: LocalDate => localDateAsJValue(ld.atStartOfDay(DefaultZoneOffSet).toLocalDateTime, localDateTimeFormatter)
     }
   }
 

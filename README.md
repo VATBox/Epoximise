@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/VATBox/Epoximise.svg?style=svg)](https://circleci.com/gh/VATBox/Epoximise)
 
 ```
-    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.2"
+    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.3"
 ```
 
 ## Example is the best way to explain what it does.
@@ -170,9 +170,12 @@
     ```scala
      object ObjectIdSerializer extends Serializer[ObjectId]
      object UUIDSerializer extends Serializer[UUID]
-     // Date* serializers - pick one since you can't use both when deserializing from MongoDB 
+     // For java.time._  
      case class LocalDateTimeSerializer(localDateTimeFormatter: DateTimeFormatter) extends Serializer[LocalDateTime]
+     case class LocalDateSerializer(localDateTimeFormatter: DateTimeFormatter) extends Serializer[LocalDate]
+     // For java.util
      object DateSerializer extends Serializer[Date]
-  
-     implicit val formats: Formats = DefaultFormats + ObjectIdSerializer + LocalDateTimeSerializer() + UUIDSerializer
+     
+     // Example: 
+     implicit val formats: Formats = DefaultFormats + ObjectIdSerializer + LocalDateTimeSerializer() + LocalDateSerializer() + UUIDSerializer
     ```
