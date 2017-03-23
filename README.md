@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/VATBox/Epoximise.svg?style=svg)](https://circleci.com/gh/VATBox/Epoximise)
 
 ```
-    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.3"
+    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.4"
 ```
 
 ## Example is the best way to explain what it does.

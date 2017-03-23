@@ -69,3 +69,8 @@ case class EpoximiseBuilder(
     override protected val serializer: EpoximiseSerializer = EpoximiseSerializer(localDateTimeFormatter, zoneOffset)
   }
 }
+
+object DefaultEpoximiseInstance extends Epoximise {
+  override protected val parser: EpoximiseParser = EpoximiseParser(DefaultDateTimeFormatter, optimizeBigInt = true, DefaultZoneOffSet)
+  override protected val serializer: EpoximiseSerializer = EpoximiseSerializer(DefaultDateTimeFormatter, DefaultZoneOffSet)
+}
