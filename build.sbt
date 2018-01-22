@@ -5,8 +5,8 @@ packageSummary := "Epoximise is a Mongo Scala async driver helper"
 packageDescription := "Library that takes a class and then maps it to it's DB representation"
 version := "1.0.4"
 
-scalaVersion := "2.12.1"
-crossScalaVersions := Seq("2.11.8", "2.12.1")
+scalaVersion := "2.12.4"
+crossScalaVersions := Seq("2.11.8", "2.12.4")
 organization := "com.vatbox"
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".sonatypecredentials")
