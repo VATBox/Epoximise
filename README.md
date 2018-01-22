@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/VATBox/Epoximise.svg?style=svg)](https://circleci.com/gh/VATBox/Epoximise)
 
 ```
-    libraryDependencies += "com.vatbox" %% "epoximise" % "1.0.4"
+    libraryDependencies += "com.vatbox" %% "epoximise" % "2.0.0"
 ```
 
 ## Example is the best way to explain what it does.
@@ -157,8 +157,8 @@
  * Dependencies you will need to add are:
   
   ```scala
-    "org.mongodb.scala" %% "mongo-scala-driver" % "1.2.1",
-    "org.json4s" %% "json4s-core" % "3.5.0"
+    "org.mongodb.scala" %% "mongo-scala-driver" % "2.2.0",
+    "org.json4s" %% "json4s-core" % "3.6.0-M2"
   ```
  * You will also need to have [Formats](https://github.com/json4s/json4s/blob/3.6/core/src/main/scala/org/json4s/Formats.scala) implicitly available when using this library:
     
