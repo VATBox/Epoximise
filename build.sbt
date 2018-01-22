@@ -41,8 +41,8 @@ pomExtra := (
     </developers>)
 
 libraryDependencies ++= {
-  val MongoScalaDriverVersion = "1.2.1"
-  val Json4sVersion = "3.5.0"
+  val MongoScalaDriverVersion = "2.2.0"
+  val Json4sVersion = "3.6.0-M2"
   Seq(
     "org.mongodb.scala" %% "mongo-scala-driver" % MongoScalaDriverVersion % Provided,
     "org.json4s" %% "json4s-core" % Json4sVersion % Provided,
